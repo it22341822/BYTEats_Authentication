@@ -21,6 +21,18 @@ const userSchema = new Schema<IUser>(
       type: String,
       default: "user",
     },
+    resetOTP: {
+      type: String,
+      default: null,
+    },
+    resetOTPExpires: {
+      type: Date,
+      default: null,
+    },
+    mobile: {
+      type: String,
+      required: true,
+    },
   },
   { timestamps: true }
 );

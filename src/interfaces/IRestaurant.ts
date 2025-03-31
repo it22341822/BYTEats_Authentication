@@ -9,5 +9,7 @@ export interface IRestaurant extends Document {
     password : string;
     mobile : string;
     role : string;
+    resetOTP : string | null;
+    resetOTPExpires : Date | null;
     comparePassword(candidatePassword: string): Promise<boolean>;
 }
