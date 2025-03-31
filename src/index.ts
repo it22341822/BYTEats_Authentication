@@ -3,9 +3,8 @@ import connectDB from './config/dbConnect';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import cookieParser from "cookie-parser";
-
+import deliveryRoutes from './routes/delivery.route';
 import authRoute from "./routes/auth.route";
-
 const app = express();
 const PORT = process.env.PORT || 5000;
 
@@ -19,6 +18,7 @@ app.get("/", (req, res) => {
   });
 
 app.use("/api/auth", authRoute);
+app.use("/api/delivery", deliveryRoutes);
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
