@@ -33,6 +33,14 @@ const restaurantSchema = new Schema<IRestaurant>(
       type: String,
       default: "restaurant",
     },
+    resetOTP: {
+      type: String,
+      default: null,
+    },
+    resetOTPExpires: {
+      type: Date,
+      default: null,
+    },
   },
   { timestamps: true }
 );
