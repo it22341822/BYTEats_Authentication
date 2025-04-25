@@ -47,3 +47,57 @@ export const login = async (req: Request, res: Response) => {
         res.status(500).json({ error});
     }
 };
+
+export const forgotPassword = async (req: Request, res: Response) => {
+    try{
+        const { email, mobile } = req.body;
+
+        const restaurant = await Restaurant.findOne({ email, mobile });
+        if (!restaurant) return res.status(400).json({ error: "Restaurant not found" });
+
+        //generate OTP and send it to the restaurant's mobile number
+        const otp = Math.floor(100000 + Math.random() * 900000).toString(); // 6 digit OTP
+        restaurant.resetOTP = otp;
+        restaurant.resetOTPExpires = new Date(Date.now() + 15 * 60 * 1000); // OTP expires in 15 minutes
+        await restaurant.save();
+
+        console.log(`OTP for ${restaurant.mobile}: ${otp}`); // Replace with actual SMS sending logic
+        res.status(200).json({ message: "OTP sent successfully" });
+
+    }catch(error) {
+        res.status(500).json({ message: "Error in forget password", error });
+    }
+};
+
+export const verifyOTP = async (req: Request, res: Response) => {
+    try {
+        const { mobile, otp } = req.body;
+
+        const restaurant = await Restaurant.findOne({ mobile });
+        if (!restaurant || restaurant.resetOTP !== otp || restaurant.resetOTPExpires! < new Date()) {
+            return res.status(400).json({ error: "Invalid OTP or OTP expired" });
+        }
+
+        res.json({ message: "OTP verified : Set a new password now !!" });
+    } catch (error) {
+        res.status(500).json({ message: "Error in verify OTP", error });
+    }
+};
+
+export const resetPassword = async (req: Request, res: Response) => {
+    try{
+        const { mobile, newPassword } = req.body;
+
+        const restaurant = await Restaurant.findOne({ mobile });
+        if (!restaurant) return res.status(400).json({ error: "Restaurant not found" });
+
+        restaurant.password = await hashPassword(newPassword);
+        restaurant.resetOTP = null; // Clear OTP after successful password reset
+        restaurant.resetOTPExpires = null; // Clear OTP expiration date
+        await restaurant.save();
+
+        res.json({ message: "Password reset successfully" });
+    }catch (error) {
+        res.status(500).json({ message: "Error in reset password", error });
+    }
+};
